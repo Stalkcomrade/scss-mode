@@ -79,14 +79,16 @@ HYPERLINK HIGHLIGHT)"
   (if scss-compile-at-save
       (scss-compile)))
 
-(defun scss-compile()
+(defun scss-compile (&optional single)
   "Compiles the directory belonging to the current buffer, using the --update option"
-  (interactive)
-  (compile (concat scss-sass-command " " (mapconcat 'identity scss-sass-options " ") " --update "
-                   (when (string-match ".*/" buffer-file-name)
-                     (concat "'" (match-string 0 buffer-file-name) "'"))
-                   (when scss-output-directory
-                     (concat ":'" scss-output-directory "'")))))
+  (interactive "P")
+  (compile (concat scss-sass-command " " (mapconcat 'identity scss-sass-options " ")
+                   ;; (when (string-match ".*/" buffer-file-name)
+                     ;; (concat "'" (match-string 0 buffer-file-name) "'"))
+                   (if single
+                       (concat ":'" scss-output-directory "'")
+                     (concat " " (buffer-file-name) ":"
+                             (file-name-sans-extension (file-name-nondirectory (buffer-file-name))) ".css")))))
 
 ;;;###autoload
 (define-derived-mode scss-mode css-mode "SCSS"
